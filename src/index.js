@@ -9,17 +9,20 @@ const compileConfiguration = (options = {}, bitsConfig) => {
   };
 };
 
-export default (options) =>
-({
-  loadSchema: (bitsConfig) =>  {
-    const config = compileConfiguration(options, bitsConfig);
-    this.schema = loadSchema(config);
+export default (options) => {
+  let schema = null;
 
-    return this.schema;
-  },
-  loadRoutes: (bitsConfig) => {
-    const config = compileConfiguration(options, bitsConfig);
+  return {
+    loadSchema: (bitsConfig) =>  {
+      const config = compileConfiguration(options, bitsConfig);
+      schema = loadSchema(config);
 
-    return loadRoutes(config, this.schema);
-  }
-});
+      return schema;
+    },
+    loadRoutes: (bitsConfig) => {
+      const config = compileConfiguration(options, bitsConfig);
+
+      return loadRoutes(config, schema);
+    }
+  };
+};

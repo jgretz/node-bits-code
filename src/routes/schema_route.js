@@ -4,18 +4,18 @@ export default class SchemaRoute {
   }
 
   get(req, res) {
-    res({ call: 'get', schema });
+    res.json({ call: 'get', schema: this.schema });
   }
 
   put(req, res) {
-    res({ call: 'put', schema });
+    res.json({ call: 'put', schema: this.schema });
   }
 
   post(req, res) {
-    res({ call: 'post', schema });
+    res.json({ call: 'post', schema: this.schema });
   }
 
   delete(req, res) {
-    res({ call: 'delete', schema });
+    res.json({ call: 'delete', schema: this.schema });
   }
 }

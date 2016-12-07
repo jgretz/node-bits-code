@@ -10,7 +10,7 @@ const defineRoute = (verb, route, implementation) => ({ verb, route, implementat
 
 const defineRoutes = (key, schema) => {
   const handler = defineHandler(key, schema);
-  const route = `/${name}`;
+  const route = `/${key}`;
 
   return [
     defineRoute(GET, route, handler),

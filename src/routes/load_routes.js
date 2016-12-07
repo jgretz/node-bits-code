@@ -1,4 +1,5 @@
 import loadCodeRoutes from './load_code_routes';
+import loadSchemaRoutes from './load_schema_routes';
 
 // load route
 export default (config, codeSchema = {}) => {

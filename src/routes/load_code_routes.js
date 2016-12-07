@@ -8,7 +8,7 @@ import definitionName from '../util/definition_name';
 import {
   CLASS, FUNC, OBJ,
   GET, VERBS,
-} from './util/constants';
+} from '../util/constants';
 
 // helpers
 const defineRoute = (path, name) => `${path}${name}`;
@@ -77,7 +77,7 @@ export default (configPath) => {
 
   const routes = files.map((filePath) => {
     const module = require(filePath);
-    const definitions = parseDefinitions(module, config.path, filePath);
+    const definitions = parseDefinitions(module, configPath, filePath);
 
     return mapRoutes(definitions);
   });
