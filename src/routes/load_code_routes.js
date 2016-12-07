@@ -1,24 +1,17 @@
 import _ from 'lodash';
 import path from 'path';
 
-import loadFiles from './util/load_files';
-import isClass from './util/is_class';
+import loadFiles from '../util/load_files';
+import isClass from '../util/is_class';
+import definitionName from '../util/definition_name';
 
-// constants
-const CLASS = 'class';
-const FUNC = 'func';
-const OBJ = 'obj';
-
-const GET = 'get';
-const POST = 'post';
-const PUT = 'put';
-const DELETE = 'delete';
-
-const verbs = [GET, POST, PUT, DELETE];
+import {
+  CLASS, FUNC, OBJ,
+  GET, VERBS,
+} from './util/constants';
 
 // helpers
-const nameFromFile = (filePath) => path.basename(filePath, path.extname(filePath));
-const isDefault = (key) => key === 'default';
+const defineRoute = (path, name) => `${path}${name}`;
 
 const mapType = (def) => {
   if (isClass(def)) {
@@ -33,14 +26,20 @@ const mapType = (def) => {
 };
 
 // parse the definitions from the file (allow multiple per file)
-const parseDefinitions = (module, filePath) => {
+const parseDefinitions = (module, rootPath, filePath) => {
   const keys = _.keys(module);
 
   return keys.map((key) => {
     const def = module[key];
 
+    // this needs to be any folders below {root}/routes so we can match that structure in the url
+    const relativePath = filePath.replace(rootPath, '')
+      .replace('/routes', '')
+      .replace(path.basename(filePath), '');
+
     return {
-      name: isDefault(key) ? nameFromFile(filePath) : key,
+      path: relativePath,
+      name: definitionName(key, filePath),
       type: mapType(def),
       definition: def,
     };
@@ -54,7 +53,7 @@ const mapRoutes = (definitions) => {
     if (def.type === FUNC) {
       return {
         verb: GET,
-        route: def.name,
+        route: defineRoute(def.path, def.name),
         implementation: { get: def.definition },
       };
     }
@@ -63,25 +62,22 @@ const mapRoutes = (definitions) => {
     const instance = def.type === CLASS ? new def.definition() : def.definition;
 
     // create route for each verb
-    const verbsDefined = _.filter(verbs, (v) => instance[v]);
+    const verbsDefined = _.filter(VERBS, (v) => instance[v]);
     return verbsDefined.map((verb) => ({
       verb,
-      route: def.name,
+      route: defineRoute(def.path, def.name),
       implementation: instance,
     }));
   });
 };
 
 // load route
-export default (config) => {
-  if (!config.path) {
-    return [];
-  }
+export default (configPath) => {
+  const files = loadFiles(configPath, 'routes');
 
-  const files = loadFiles(config.path, 'routes');
   const routes = files.map((filePath) => {
     const module = require(filePath);
-    const definitions = parseDefinitions(module, filePath);
+    const definitions = parseDefinitions(module, config.path, filePath);
 
     return mapRoutes(definitions);
   });
