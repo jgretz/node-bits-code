@@ -72,12 +72,12 @@ const mapRoutes = (definitions) => {
 };
 
 // load route
-export default (configPath) => {
-  const files = loadFiles(configPath, 'routes');
+export default (config) => {
+  const files = loadFiles(config.path, 'routes');
 
   const routes = files.map((filePath) => {
     const module = require(filePath);
-    const definitions = parseDefinitions(module, configPath, filePath);
+    const definitions = parseDefinitions(module, config.path, filePath);
 
     return mapRoutes(definitions);
   });
