@@ -1,5 +1,5 @@
-import loadSchema from './schema/load_schema';
-import loadRoutes from './routes/load_routes';
+import loadSchema from './load_schema';
+import loadRoutes from './load_routes';
 
 // compile
 const compileConfiguration = (options = {}, bitsConfig) => {
