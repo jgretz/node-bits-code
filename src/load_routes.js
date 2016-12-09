@@ -1,14 +1,14 @@
 import _ from 'lodash';
 import path from 'path';
 
-import loadFiles from '../util/load_files';
-import isClass from '../util/is_class';
-import definitionName from '../util/definition_name';
+import loadFiles from './util/load_files';
+import isClass from './util/is_class';
+import definitionName from './util/definition_name';
 
 import {
   CLASS, FUNC, OBJ,
   GET, VERBS,
-} from '../util/constants';
+} from './util/constants';
 
 // helpers
 const defineRoute = (path, name) => `${path}${name}`;

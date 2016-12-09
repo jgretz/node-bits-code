@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
-import loadFiles from '../util/load_files';
-import definitionName from '../util/definition_name';
+import loadFiles from './util/load_files';
+import definitionName from './util/definition_name';
 
 // parse the definitions from the file (allow multiple per file)
 const parseDefinitions = (schema, module, filePath) => {

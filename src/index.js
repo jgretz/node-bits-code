@@ -9,20 +9,12 @@ const compileConfiguration = (options = {}, bitsConfig) => {
   };
 };
 
+const load = (func, options, bitsConfig) =>
+  func(compileConfiguration(options, bitsConfig));
+
 export default (options) => {
-  let schema = null;
-
   return {
-    loadSchema: (bitsConfig) =>  {
-      const config = compileConfiguration(options, bitsConfig);
-      schema = loadSchema(config);
-
-      return schema;
-    },
-    loadRoutes: (bitsConfig) => {
-      const config = compileConfiguration(options, bitsConfig);
-
-      return loadRoutes(config, schema);
-    }
+    loadSchema: (bitsConfig) => load(loadSchema, options, bitsConfig),
+    loadRoutes: (bitsConfig) => load(loadRoutes, options, bitsConfig),
   };
 };
