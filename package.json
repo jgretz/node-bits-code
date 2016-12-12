@@ -1,6 +1,6 @@
 {
   "name": "node-bits-code",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Provides an abstraction layer for defining routes and schema in files",
   "main": "lib/index.js",
   "scripts": {

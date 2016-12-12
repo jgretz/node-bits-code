@@ -21,6 +21,7 @@ export default (config) => {
     return [];
   }
 
+  // load the schema
   const files = loadFiles(config.path, 'schema');
 
   const schema = {};
@@ -28,6 +29,11 @@ export default (config) => {
     const module = require(filePath);
     parseDefinitions(schema, module, filePath);
   });
+
+  // if we have a database go ahead and synchronize the schema
+  if (config.database) {
+    config.database.synchronizeSchema(schema);
+  }
 
   return schema;
 };
