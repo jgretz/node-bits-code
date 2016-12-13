@@ -1,6 +1,6 @@
 {
   "name": "node-bits-code",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Provides an abstraction layer for defining routes and schema in files",
   "main": "lib/index.js",
   "scripts": {
@@ -20,8 +20,7 @@
   "homepage": "https://github.com/jgretz/node-bits-code#readme",
   "dependencies": {
     "glob": "^7.0.6",
-    "lodash": "^4.17.2",
-    "object-assign": "^4.0.1"
+    "lodash": "^4.17.2"
   },
   "devDependencies": {
     "babel-cli": "^6.10.1",
