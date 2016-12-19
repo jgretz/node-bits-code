@@ -71,16 +71,31 @@ const mapRoutes = (definitions) => {
   });
 };
 
+const registerDatabase = (routes, config) => {
+  _.forEach(routes, route => {
+    // pass in the database if defined and requested
+    if (route.implementation.registerDatabase && config.database) {
+      route.implementation.registerDatabase(config.database);
+    }
+  });
+};
+
 // load route
 export default (config) => {
   const files = loadFiles(config.path, 'routes');
 
-  const routes = files.map((filePath) => {
+  // create the routes
+  const rawRoutes = files.map((filePath) => {
     const module = require(filePath);
     const definitions = parseDefinitions(module, config.path, filePath);
 
     return mapRoutes(definitions);
   });
+  const routes = _.flattenDeep(rawRoutes);
 
-  return _.flattenDeep(routes);
+  // let the routes now about the database
+  registerDatabase(routes, config);
+
+  // return
+  return routes;
 };
