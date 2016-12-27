@@ -1,3 +1,4 @@
+import initialize from './initialize';
 import loadSchema from './load_schema';
 import loadRoutes from './load_routes';
 
@@ -14,6 +15,7 @@ const load = (func, options, bitsConfig) =>
 
 export default (options) => {
   return {
+    initialize: (bitsConfig) => load(initialize, options, bitsConfig),
     loadSchema: (bitsConfig) => load(loadSchema, options, bitsConfig),
     loadRoutes: (bitsConfig) => load(loadRoutes, options, bitsConfig),
   };
