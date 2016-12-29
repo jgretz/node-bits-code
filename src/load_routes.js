@@ -8,7 +8,7 @@ import definitionName from './util/definition_name';
 import {
   CLASS, FUNC, OBJ,
   GET, VERBS,
-} from './util/constants';
+} from 'node-bits';
 
 // helpers
 const defineRoute = (path, name) => `${path}${name}`;

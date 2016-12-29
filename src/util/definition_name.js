@@ -1,5 +1,5 @@
 import path from 'path';
-import { DEFAULT, INDEX } from './constants';
+import { DEFAULT, INDEX } from 'node-bits';
 
 // helpers
 const isDefault = (key) => key === DEFAULT;
