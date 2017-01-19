@@ -1,8 +1,6 @@
 import _ from 'lodash';
 
-import loadFiles from './util/load_files';
-import definitionName from './util/definition_name';
-import isClass from './util/is_class';
+import { loadFiles, definitionName, isClass } from './util';
 
 // parse the definitions from the file (allow multiple per file)
 const parseDefinitions = (module, filePath) => {

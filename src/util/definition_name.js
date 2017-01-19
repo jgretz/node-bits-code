@@ -6,7 +6,7 @@ const isDefault = (key) => key === DEFAULT;
 const nameFromFile = (filePath) => path.basename(filePath, path.extname(filePath));
 
 // function
-export default (key, filePath) => {
+export const definitionName = (key, filePath) => {
   const name = isDefault(key) ? nameFromFile(filePath) : key;
 
   return name === INDEX ? '' : name;

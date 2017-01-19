@@ -1,18 +1,44 @@
 import _ from 'lodash';
 
-import loadFiles from './util/load_files';
-import definitionName from './util/definition_name';
+import {
+  loadFiles, definitionName,
+  isRelationship, isModel, standardizeSchemaDefinition,
+} from './util';
+
+const combine = (schema, partial) => {
+  return {
+    schema: {
+      ...schema.schema,
+      ...partial.schema,
+    },
+
+    relationships: [
+      ...schema.relationships,
+      ...partial.relationships,
+    ],
+  };
+};
 
 // parse the definitions from the file (allow multiple per file)
-const parseDefinitions = (schema, module, filePath) => {
+const parseDefinitions = (module, filePath) => {
   const keys = _.keys(module);
 
-  _.forEach(keys, (key) => {
+  return _.reduce(keys, (schema, key) => {
     const def = module[key];
-    const name = definitionName(key, filePath);
 
-    schema[name] = def;
-  });
+    if (isRelationship(def)) {
+      return combine(schema, { schema: {}, relationships: [def] });
+    }
+
+    if (isModel(def)) {
+      const name = definitionName(key, filePath);
+      const standardized = standardizeSchemaDefinition(def);
+
+      return combine(schema, { schema: { [name]: standardized }, relationships: [] });
+    }
+
+    return schema;
+  }, { schema: {}, relationships: [] });
 };
 
 // load schema
@@ -24,15 +50,16 @@ export default (config) => {
   // load the schema
   const files = loadFiles(config.path, 'schema');
 
-  const schema = {};
-  _.forEach(files, (filePath) => {
+  const schema = _.reduce(files, (schema, filePath) => {
     const module = require(filePath);
-    parseDefinitions(schema, module, filePath);
-  });
+    const partial = parseDefinitions(module, filePath);
+
+    return combine(schema, partial);
+  }, { schema: {}, relationships: [] });
 
   // if we have a database go ahead and synchronize the schema
   if (config.database) {
-    config.database.synchronizeSchema(schema);
+    config.database.synchronizeSchema(schema.schema, schema.relationships);
   }
 
   return schema;

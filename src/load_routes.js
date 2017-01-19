@@ -1,14 +1,8 @@
 import _ from 'lodash';
 import path from 'path';
+import { CLASS, FUNC, OBJ, GET, VERBS } from 'node-bits';
 
-import loadFiles from './util/load_files';
-import isClass from './util/is_class';
-import definitionName from './util/definition_name';
-
-import {
-  CLASS, FUNC, OBJ,
-  GET, VERBS,
-} from 'node-bits';
+import  { loadFiles, isClass, definitionName } from './util';
 
 // helpers
 const defineRoute = (path, name) => `${path}${name}`;
