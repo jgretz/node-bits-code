@@ -2,20 +2,25 @@ import _ from 'lodash';
 
 import {
   loadFiles, definitionName,
-  isRelationship, isModel, standardizeSchemaDefinition,
+  isRelationship, isIndex, standardizeSchemaDefinition,
 } from './util';
 
 const combine = (schema, partial) => {
   return {
     schema: {
       ...schema.schema,
-      ...partial.schema,
+      ...(partial.schema || {}),
     },
 
     relationships: [
       ...schema.relationships,
-      ...partial.relationships,
+      ...(partial.relationships || []),
     ],
+
+    indexes: [
+      ...schema.indexes,
+      ...(partial.indexes || [])
+    ]
   };
 };
 
@@ -27,18 +32,19 @@ const parseDefinitions = (module, filePath) => {
     const def = module[key];
 
     if (isRelationship(def)) {
-      return combine(schema, { schema: {}, relationships: [def] });
+      return combine(schema, { relationships: [def] });
     }
 
-    if (isModel(def)) {
-      const name = definitionName(key, filePath);
-      const standardized = standardizeSchemaDefinition(def);
-
-      return combine(schema, { schema: { [name]: standardized }, relationships: [] });
+    if (isIndex(def)) {
+      return combine(schema, { indexes: [def] });
     }
 
-    return schema;
-  }, { schema: {}, relationships: [] });
+    // assume schema item to save the check
+    const name = definitionName(key, filePath);
+    const standardized = standardizeSchemaDefinition(def);
+
+    return combine(schema, { schema: { [name]: standardized } });
+  }, { schema: {}, relationships: [], indexes: [] });
 };
 
 // load schema
@@ -55,7 +61,7 @@ export default (config) => {
     const partial = parseDefinitions(module, filePath);
 
     return combine(schema, partial);
-  }, { schema: {}, relationships: [] });
+  }, { schema: {}, relationships: [], indexes: [] });
 
   // if we have a database go ahead and synchronize the schema
   if (config.database) {
