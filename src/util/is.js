@@ -11,7 +11,6 @@ export const isIndex = (module) => {
   return module.model && module.fields;
 };
 
-export const isModel = (module) => {
-  // simple for now, but use for the future support
-  return !isRelationship(module) && !isIndex(module);
+export const isMigration = (module, filePath) => {
+  return filePath.includes('migrations');
 };
