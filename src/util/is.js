@@ -14,3 +14,7 @@ export const isIndex = (module) => {
 export const isMigration = (module, filePath) => {
   return filePath.includes('migrations');
 };
+
+export const isSeed = (module, filePath) => {
+  return filePath.includes('seeds');
+};

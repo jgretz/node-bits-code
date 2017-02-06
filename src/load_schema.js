@@ -3,7 +3,7 @@ import path from 'path';
 
 import {
   loadFiles, definitionName, standardizeSchemaDefinition,
-  isRelationship, isIndex, isMigration,
+  isRelationship, isIndex, isMigration, isSeed,
 } from './util';
 
 const combine = (schema, partial) => {
@@ -26,6 +26,11 @@ const combine = (schema, partial) => {
     migrations: [
       ...schema.migrations,
       ...(partial.migrations || []),
+    ],
+
+    seeds: [
+      ...schema.seeds,
+      ...(partial.seeds || []),
     ]
   };
 };
@@ -50,12 +55,17 @@ const parseDefinitions = (module, filePath) => {
       return combine(schema, { migrations: [migration] });
     }
 
+    if (isSeed(def, filePath)) {
+      const seed = { name: path.parse(filePath).name, seeds: def };
+      return combine(schema, { seeds: [seed] });
+    }
+
     // assume schema item to save the check
     const name = definitionName(key, filePath);
     const standardized = standardizeSchemaDefinition(def);
 
     return combine(schema, { schema: { [name]: standardized } });
-  }, { schema: {}, relationships: [], indexes: [], migrations: [] });
+  }, { schema: {}, relationships: [], indexes: [], migrations: [], seeds: [] });
 };
 
 // load schema
@@ -72,7 +82,7 @@ export default (config) => {
     const partial = parseDefinitions(module, filePath);
 
     return combine(schema, partial);
-  }, { schema: {}, relationships: [], indexes: [], migrations: [] });
+  }, { schema: {}, relationships: [], indexes: [], migrations: [], seeds: [] });
 
   // if we have a database go ahead and synchronize the schema
   if (config.database) {
