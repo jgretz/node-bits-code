@@ -57,11 +57,19 @@ const mapRoutes = (definitions) => {
 
     // create route for each verb
     const verbsDefined = _.filter(VERBS, (v) => instance[v]);
-    return verbsDefined.map((verb) => ({
-      verb,
-      route: defineRoute(def.path, def.name),
-      implementation: instance,
-    }));
+
+    return verbsDefined.map((verb) =>  {
+      let route = instance.getRoute ? defineRoute(def.path, instance.getRoute(verb)) : null;
+      if (!route) {
+        route = defineRoute(def.path, def.name);
+      }
+
+      return {
+        verb,
+        route,
+        implementation: instance,
+      };
+    });
   });
 };
 
