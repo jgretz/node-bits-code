@@ -6,6 +6,7 @@ import  { loadFiles, isClass, definitionName } from './util';
 
 // helpers
 const defineRoute = (path, name) => `${path}${name}`;
+const defineCustomRoute = (path, name, route) => `${path}${name}${route}`;
 
 const mapType = (def) => {
   if (isClass(def)) {
@@ -59,7 +60,9 @@ const mapRoutes = (definitions) => {
     const verbsDefined = _.filter(VERBS, (v) => instance[v]);
     return verbsDefined.map((verb) => ({
       verb,
-      route: defineRoute(def.path, def.name),
+      route: typeof instance.routes !== 'undefined'
+        && typeof instance.routes[verb] !== 'undefined' ?
+          defineCustomRoute(def.path, def.name, instance.routes[verb]) : defineRoute(def.path, def.name),
       implementation: instance,
     }));
   });
