@@ -92,10 +92,49 @@ export default class Test {
 };
 ```
 
+### Database Access
+Often you will need access to the database as you implement your route. node-bits-code can pass you the database defined during the initializeDatabase step - simply expose a method on your route named registerDatabase.
+
+```
+export default class Test {
+  registerDatabase(db) {
+    this.db = db;
+  }
+
+  get(req, res) {
+    this.db.find({ id: 1})
+      .then((result) => res.json(result));
+  }
+}
+```
+
+### Custom Route Definition
+Occasionally the convention of the folder structure is insufficient to represent the desired route. If you find your self in this situation, you can implement the getRoute method in your route and return the required route address.
+
+```
+import { GET } from 'node-bits';
+
+export default class Test {
+  getRoute(verb) {
+    if (verb === GET) {
+      return '/api/test/all';
+    }
+
+    return null; // will use the folder structure for all other verbs
+  }
+
+  get(req, res) {
+    res.json([]);
+  }
+}
+```
+
 ## Schema
 node-bits-code enables the definition of the schema via json objects. In addition to being readable, this also allows you to source control the schema which is often very helpful. node-bits-code is intentionally agnostic about what database is eventually targeted; in general, you should be able to use the same schema definitions with and node-bit database bit (with the caveat that naturally there are differences in document databases vs relational databases, so there will be some features available for one and not the other).
 
 node-bits-code accepts multiple definitions per file. The default export will be named the file name, and all named exports will retain their name.
+
+node-bits-code will by convention search for a directory named ```schema``` and process the files underneath.
 
 ### Models
 Models are the objects to be stored in the database. node-bits-code expects these to be represented as js objects. The simplest objects are simply a list of properties and types. More complicated options are explained below.
@@ -111,19 +150,101 @@ export const address = {
 ```
 
 #### Column Definitions
+##### Simple
+The simplest form of defining a column is simples specifying its type: ``` street: String ```. The column will be assumed to be nullable.
 
+##### Complex
+If you need more, you can specify an object as the value for the column. Supported properties vary by implementation, so see the database provider you are using for details.
+
+```
+street: { type: String, allowNull: false, }
+balance: { type: DECIMAL, allowNull: false, precision: 10, scale: 2 }
+```
 
 #### Supported Types
 The standard JS types are supported: ```String, Number, Date, Boolean```
 
 In addition, you can import the following types from the node-bits package: ```INTEGER, DECIMAL, DOUBLE, FLOAT, UUID, STRING, PASSWORD, DATE, BOOLEAN, TEXT```
 
-#### Nested Models
-
 ### Relationships
+Relationships are only known to be supported currently by node-bits-sql. To define a relationship, you need to define the model, the reference, and the type.
+
+```
+import { MANY_TO_ONE } from 'node-bits';
+
+export const order_customer = {
+  model: 'order',
+  references: 'customer',
+  type: MANY_TO_ONE,
+}
+```
+
+By specifying relationship, the database bit will create the implied columns and foreign keys. Please see the [node-bits-sql documentation](https://github.com/jgretz/node-bits-sql) for further details.
+
+#### Nested Models
+For many models, representing their children via nesting provides a nice visual cue. All current database bits support this syntax.
+
+```
+export const order = {
+  total: Number,
+  lines: [{
+    itemId: Number,
+    quantity: Number,
+  }],
+};
+```
 
 ### Indexes
+Properly indexing your database can greatly improve access time. All current database bits support this feature. To define an index, you need to specify the model, the fields, and the direction.
+
+```
+export const orderlines_item_index = {
+  model: 'orderlines',
+  fields: [{ field: 'itemId', desc: true }],
+};
+```
 
 ### Migrations
+Migrations are currently only supported by the node-bits-sql bit. By convention they are located in a migrations folder, and are ordered following semantic versioning.
+
+Please see the [node-bits-sql documentation](https://github.com/jgretz/node-bits-sql) for further details.
 
 ### Seeds
+Seeding a database with starter content is helpful both during development cycles and the rollout of the production system. All current database bits support seeding. The bits will add a seed model to your set which will keep track of only running a seed 1x.
+
+Seeds are kept by convention in the ```schema/seeds``` directory. Models are matched to the data via the file name. Data is represented in JSON form.
+
+##### Orders Example
+File: ```schema/seeds/order.js```
+
+Content:
+```
+export default [
+  {
+    id: 1,
+    total: '5.00',
+  },
+  {
+    id: 2,
+    total: '15.00',
+  },
+];
+```
+
+File: ```schema/seeds/orderlines.js```
+
+Content:
+```
+export default [
+  {
+    orderId: 1,
+    itemId: 1,
+    quantity: 2,
+  },
+  {
+    orderId: 2,
+    itemId: 3,
+    quantity: 3,
+  },
+];
+```
