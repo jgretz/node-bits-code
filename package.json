@@ -22,7 +22,7 @@
   "dependencies": {
     "glob": "^7.0.6",
     "lodash": "^4.17.4",
-    "node-bits": "0.0.19"
+    "node-bits": "0.0.20"
   },
   "devDependencies": {
     "babel-cli": "^6.23.0",
