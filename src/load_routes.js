@@ -1,13 +1,13 @@
 import _ from 'lodash';
 import path from 'path';
-import { CLASS, FUNC, OBJ, GET, VERBS } from 'node-bits';
+import {CLASS, FUNC, OBJ, GET, VERBS} from 'node-bits';
 
-import  { loadFiles, isClass, definitionName } from './util';
+import {loadFiles, isClass, definitionName} from './util';
 
 // helpers
 const defineRoute = (path, name) => `${path}${name}`;
 
-const mapType = (def) => {
+const mapType = def => {
   if (isClass(def)) {
     return CLASS;
   }
@@ -23,7 +23,7 @@ const mapType = (def) => {
 const parseDefinitions = (module, rootPath, filePath) => {
   const keys = _.keys(module);
 
-  return keys.map((key) => {
+  return keys.map(key => {
     const def = module[key];
 
     // this needs to be any folders below {root}/routes so we can match that structure in the url
@@ -41,24 +41,24 @@ const parseDefinitions = (module, rootPath, filePath) => {
 };
 
 // map definitions in to route objects
-const mapRoutes = (definitions) => {
-  return definitions.map((def) => {
+const mapRoutes = definitions =>
+  definitions.map(def => {
     // if its just a function, we assume by definition its a get
     if (def.type === FUNC) {
       return {
         verb: GET,
         route: defineRoute(def.path, def.name),
-        implementation: { get: def.definition },
+        implementation: {get: def.definition},
       };
     }
 
     // if its a class we need to create an instance
-    const instance = def.type === CLASS ? new def.definition() : def.definition;
+    const instance = def.type === CLASS ? new def.definition() : def.definition; // eslint-disable-line
 
     // create route for each verb
-    const verbsDefined = _.filter(VERBS, (v) => instance[v]);
+    const verbsDefined = _.filter(VERBS, v => instance[v]);
 
-    return verbsDefined.map((verb) =>  {
+    return verbsDefined.map(verb => {
       let route = instance.getRoute ? defineRoute(def.path, instance.getRoute(verb)) : null;
       if (!route) {
         route = defineRoute(def.path, def.name);
@@ -71,7 +71,6 @@ const mapRoutes = (definitions) => {
       };
     });
   });
-};
 
 const registerDatabase = (routes, config) => {
   _.forEach(routes, route => {
@@ -83,11 +82,11 @@ const registerDatabase = (routes, config) => {
 };
 
 // load route
-export default (config) => {
+export default config => {
   const files = loadFiles(config.path, 'routes');
 
   // create the routes
-  const rawRoutes = files.map((filePath) => {
+  const rawRoutes = files.map(filePath => {
     const module = require(filePath);
     const definitions = parseDefinitions(module, config.path, filePath);
 

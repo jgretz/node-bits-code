@@ -1,6 +1,6 @@
-import { STRING, DECIMAL, DATE, BOOLEAN } from 'node-bits';
+import {STRING, DECIMAL, DATE, BOOLEAN} from 'node-bits';
 
-export const mapFunctionType = (type) => {
+export const mapFunctionType = type => {
   switch (type) {
     case Number:
       return DECIMAL;
@@ -15,6 +15,6 @@ export const mapFunctionType = (type) => {
       return BOOLEAN;
 
     default:
-      return undefined;
+      return undefined; // eslint-disable-line
   }
 };

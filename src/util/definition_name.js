@@ -1,9 +1,9 @@
 import path from 'path';
-import { DEFAULT, INDEX } from 'node-bits';
+import {DEFAULT, INDEX} from 'node-bits';
 
 // helpers
-const isDefault = (key) => key === DEFAULT;
-const nameFromFile = (filePath) => path.basename(filePath, path.extname(filePath));
+const isDefault = key => key === DEFAULT;
+const nameFromFile = filePath => path.basename(filePath, path.extname(filePath));
 
 // function
 export const definitionName = (key, filePath) => {
