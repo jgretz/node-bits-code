@@ -27,8 +27,8 @@ const parseDefinitions = (module, rootPath, filePath) => {
     const def = module[key];
 
     // this needs to be any folders below {root}/routes so we can match that structure in the url
-    const relativePath = filePath.replace(rootPath, '')
-      .replace('/routes', '')
+    const relativePath = filePath.replace(rootPath.replace(/\\/g, '/'), '')
+      .replace(/\/routes/, '')
       .replace(path.basename(filePath), '');
 
     return {
