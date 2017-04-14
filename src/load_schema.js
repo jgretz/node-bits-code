@@ -83,10 +83,5 @@ export default config => {
     return combine(schema, partial);
   }, {schema: {}, relationships: [], indexes: [], migrations: [], seeds: []});
 
-  // if we have a database go ahead and synchronize the schema
-  if (config.database) {
-    config.database.synchronizeSchema(schema);
-  }
-
   return schema;
 };
