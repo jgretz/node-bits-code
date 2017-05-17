@@ -1,6 +1,6 @@
 {
   "name": "node-bits-code",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "node-bits-code allows you to use code to express your routes and schema.",
   "main": "lib/index.js",
   "scripts": {
