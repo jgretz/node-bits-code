@@ -129,6 +129,37 @@ export default class Test {
 }
 ```
 
+### Request Validation
+The schema for the body of a request can be specified with JSON Schema using the [ajv package](https://www.npmjs.com/package/ajv).  By implementing a requestSchema method you can specifiy the properties that your request accepts and which ones it requires.  Any request that does not match the schema will be rejected with a 400 error before reaching your handler.  By default it will also filter out any unknown properties.  If you need to accept unknown properties, add `addtitionalPropertes: true` to your schema.
+
+```
+import { POST } from 'node-bits';
+
+export default class Test {
+  requestSchema(verb) {
+    if (verb === POST) {
+      return {
+        properties: {
+          email: {type: 'string', format: 'email'}, // email is a string that must be in email format
+          count: {type: 'number', mininum: 0}       // count is a number with a minimum value of 0
+        },
+        required: ['email']  // Only email is required, count is not
+      }
+    }
+
+    return null; // All other methods will do no request validation
+  }
+
+  post(req, res) {
+    // res.body.email will be a valid email address
+    // res.body.count will either be undefined or a number >= 0
+    // res.body will have no other properties
+    res.json([]);
+  }
+}
+```
+
+
 ## Schema
 node-bits-code enables the definition of the schema via json objects. In addition to being readable, this also allows you to source control the schema which is often very helpful. node-bits-code is intentionally agnostic about what database is eventually targeted; in general, you should be able to use the same schema definitions with and node-bit database bit (with the caveat that naturally there are differences in document databases vs relational databases, so there will be some features available for one and not the other).
 

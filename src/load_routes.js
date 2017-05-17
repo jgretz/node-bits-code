@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import Ajv from 'ajv';
 import path from 'path';
 import {CLASS, FUNC, OBJ, GET, VERBS} from 'node-bits';
 
@@ -57,8 +58,8 @@ const mapRoutes = definitions =>
 
     // create route for each verb
     const verbsDefined = _.filter(VERBS, v => instance[v]);
-
     return verbsDefined.map(verb => {
+
       let route = instance.getRoute ? defineRoute(def.path, instance.getRoute(verb)) : null;
       if (!route) {
         route = defineRoute(def.path, def.name);
@@ -81,6 +82,44 @@ const registerDatabase = (routes, config) => {
   });
 };
 
+// Add additionalProperties = false to the body schema by default
+// to ensure that unknown properties are removed.
+// There's no way to globally set this in Ajv
+const disableAdditionalProperties = schema => {
+  // addtionalProperities is only valid on the same object that has the properties property
+  if (_.has(schema, 'properties')) {
+    _.defaults(schema, {additionalProperties: false});
+  }
+
+  // The properties property can appear, and be nested, at different levels
+  // If the schema has a property named properties in it, we will needlessly add
+  // An additionalProperties: false to the schema defintion, but that will not affect validation
+  if (_.isObject(schema)) {
+    _.forOwn(schema, disableAdditionalProperties);
+  }
+};
+
+const addRequestSchemaValidation = routes => {
+  const ajv = new Ajv({removeAdditional: true, allErrors: true});
+
+  _.forEach(routes, route => {
+    const {implementation, verb} = route;
+
+    const requestSchema = implementation.requestSchema ? _.cloneDeep(implementation.requestSchema(verb)) : null;
+    if (requestSchema) {
+      disableAdditionalProperties(requestSchema);
+      route.implementation = {};
+      route.implementation[verb] = (req, res) => {
+        if (ajv.validate(requestSchema, req.body)) {
+          implementation[verb](req, res);
+        } else {
+          res.status(400).json(ajv.errorsText(ajv.errors, {separator: '\n'}).split('\n'));
+        }
+      };
+    }
+  });
+};
+
 // load route
 export default config => {
   const files = loadFiles(config.path, 'routes');
@@ -96,6 +135,8 @@ export default config => {
 
   // let the routes now about the database
   registerDatabase(routes, config);
+
+  addRequestSchemaValidation(routes);
 
   // return
   return routes;
