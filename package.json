@@ -20,6 +20,7 @@
   "homepage": "https://github.com/jgretz/node-bits-code#readme",
   "keywords": "node-bits,node,microframework,schema,routes",
   "dependencies": {
+    "ajv": "^5.1.1",
     "glob": "^7.0.6",
     "lodash": "^4.17.4",
     "node-bits": "0.0.20"
