@@ -100,7 +100,7 @@ const disableAdditionalProperties = schema => {
 };
 
 const addRequestSchemaValidation = routes => {
-  const ajv = new Ajv({removeAdditional: true, allErrors: true});
+  const ajv = new Ajv({removeAdditional: true, allErrors: true, coerceTypes: true});
 
   _.forEach(routes, route => {
     const {implementation, verb} = route;
