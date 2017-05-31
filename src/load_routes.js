@@ -138,6 +138,22 @@ export default config => {
 
   addRequestSchemaValidation(routes);
 
-  // return
-  return routes;
+  // Sorts routes by route path, placing all routes with parameters and pattern matches last
+  return routes.sort((route1, route2) => {
+
+    // Matches express simple patterns or parameters
+    // Or express will also allow RegExp objects direclty
+    const routeRegex = /:|\*|\?|\+/;
+    const route1HasPattern = route1.route.match(routeRegex) || route1.route instanceof RegExp;
+    const route2HasPattern = route2.route.match(routeRegex) || route2.route instanceof RegExp;
+
+    if (route1HasPattern && !route2HasPattern) {
+      return 1;
+    }
+    if (!route1HasPattern && route2HasPattern) {
+      return -1;
+    }
+
+    return route1.route.localeCompare(route2.route) || route1.verb.localeCompare(route2.verb);
+  });
 };
