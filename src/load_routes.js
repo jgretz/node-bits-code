@@ -6,7 +6,12 @@ import {CLASS, FUNC, OBJ, GET, VERBS} from 'node-bits';
 import {loadFiles, isClass, definitionName} from './util';
 
 // helpers
-const defineRoute = (path, name) => `${path}${name}`;
+const defineRoute = (path, name) => {
+  if (name instanceof RegExp) {
+    return new RegExp(path + name);
+  }
+  return `${path}${name}`;
+};
 
 const mapType = def => {
   if (isClass(def)) {
@@ -144,8 +149,8 @@ export default config => {
     // Matches express simple patterns or parameters
     // Or express will also allow RegExp objects direclty
     const routeRegex = /:|\*|\?|\+/;
-    const route1HasPattern = route1.route.match(routeRegex) || route1.route instanceof RegExp;
-    const route2HasPattern = route2.route.match(routeRegex) || route2.route instanceof RegExp;
+    const route1HasPattern = route1.route instanceof RegExp || route1.route.match(routeRegex);
+    const route2HasPattern = route2.route instanceof RegExp || route2.route.match(routeRegex);
 
     if (route1HasPattern && !route2HasPattern) {
       return 1;
@@ -154,6 +159,6 @@ export default config => {
       return -1;
     }
 
-    return route1.route.localeCompare(route2.route) || route1.verb.localeCompare(route2.verb);
+    return `${route1.route}`.localeCompare(`${route2.route}`) || route1.verb.localeCompare(route2.verb);
   });
 };
