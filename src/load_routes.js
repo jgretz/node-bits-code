@@ -114,9 +114,9 @@ const addRequestSchemaValidation = routes => {
     if (requestSchema) {
       disableAdditionalProperties(requestSchema);
       route.implementation = {};
-      route.implementation[verb] = (req, res) => {
+      route.implementation[verb.toLowerCase()] = (req, res) => {
         if (ajv.validate(requestSchema, req.body)) {
-          implementation[verb](req, res);
+          implementation[verb.toLowerCase()](req, res);
         } else {
           res.status(400).json(ajv.errorsText(ajv.errors, {separator: '\n'}).split('\n'));
         }
