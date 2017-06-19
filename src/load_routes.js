@@ -62,7 +62,7 @@ const mapRoutes = definitions =>
     const instance = def.type === CLASS ? new def.definition() : def.definition; // eslint-disable-line
 
     // create route for each verb
-    const verbsDefined = _.filter(VERBS, v => instance[v]);
+    const verbsDefined = _.filter(VERBS, v => instance[v.toLowerCase()]);
     return verbsDefined.map(verb => {
 
       let route = instance.getRoute ? defineRoute(def.path, instance.getRoute(verb)) : null;
