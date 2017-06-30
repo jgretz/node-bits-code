@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import Ajv from 'ajv';
+import ajvErrors from 'ajv-errors';
 import path from 'path';
 import {CLASS, FUNC, OBJ, GET, VERBS} from 'node-bits';
 
@@ -104,8 +105,9 @@ const disableAdditionalProperties = schema => {
   }
 };
 
-const addRequestSchemaValidation = routes => {
-  const ajv = new Ajv({removeAdditional: true, allErrors: true, coerceTypes: true});
+const addRequestSchemaValidation = (routes, config) => {
+  const ajv = new Ajv({removeAdditional: true, allErrors: true, coerceTypes: true, jsonPointers: true});
+  if (config.useAjvErrors) ajvErrors(ajv);
 
   _.forEach(routes, route => {
     const {implementation, verb} = route;
@@ -118,7 +120,8 @@ const addRequestSchemaValidation = routes => {
         if (ajv.validate(requestSchema, req.body)) {
           implementation[verb.toLowerCase()](req, res);
         } else {
-          res.status(400).json(ajv.errorsText(ajv.errors, {separator: '\n'}).split('\n'));
+          const errors = config.useAjvErrors ? ajv.errors : ajv.errorsText(ajv.errors, {separator: '\n'}).split('\n');
+          res.status(400).json(errors);
         }
       };
     }
@@ -141,7 +144,7 @@ export default config => {
   // let the routes now about the database
   registerDatabase(routes, config);
 
-  addRequestSchemaValidation(routes);
+  addRequestSchemaValidation(routes, config);
 
   // Sorts routes by route path, placing all routes with parameters and pattern matches last
   return routes.sort((route1, route2) => {
