@@ -21,6 +21,7 @@
   "keywords": "node-bits,node,microframework,schema,routes",
   "dependencies": {
     "ajv": "^5.1.6",
+    "ajv-errors": "^1.0.0",
     "glob": "^7.1.2",
     "lodash": "^4.17.4",
     "node-bits": "^0.0.26"
