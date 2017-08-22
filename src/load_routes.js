@@ -100,8 +100,9 @@ const disableAdditionalProperties = schema => {
   // The properties property can appear, and be nested, at different levels
   // If the schema has a property named properties in it, we will needlessly add
   // An additionalProperties: false to the schema defintion, but that will not affect validation
+  // Skip the errorMessage property used by avjErrors.  It may have a properties property, but we don't want to change it
   if (_.isObject(schema)) {
-    _.forOwn(schema, disableAdditionalProperties);
+    _.forOwn(_.omit(schema, 'errorMessage'), disableAdditionalProperties);
   }
 };
 
