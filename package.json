@@ -1,6 +1,6 @@
 {
   "name": "node-bits-code",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "node-bits-code allows you to use code to express your routes and schema.",
   "main": "lib/index.js",
   "scripts": {
@@ -18,24 +18,30 @@
     "url": "https://github.com/jgretz/node-bits-code/issues"
   },
   "homepage": "https://github.com/jgretz/node-bits-code#readme",
-  "keywords": "node-bits,node,microframework,schema,routes",
+  "keywords": [
+    "node-bits",
+    "node",
+    "microframework",
+    "schema",
+    "routes"
+  ],
   "dependencies": {
-    "ajv": "^5.1.6",
-    "ajv-errors": "^1.0.0",
-    "glob": "^7.1.2",
-    "lodash": "^4.17.4",
-    "node-bits": "^0.0.26"
+    "ajv": "^6.10.0",
+    "ajv-errors": "^1.0.1",
+    "glob": "^7.1.4",
+    "lodash": "^4.17.11",
+    "node-bits": "^0.0.35"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-core": "^6.25.0",
-    "babel-eslint": "^7.2.3",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^10.0.1",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-1": "^6.24.1",
-    "babel-register": "^6.24.1",
-    "eslint": "^4.0.0",
-    "eslint-plugin-import": "^2.3.0",
-    "nodemon": "^1.9.2",
-    "shelljs": "^0.7.8"
+    "babel-register": "^6.26.0",
+    "eslint": "^5.16.0",
+    "eslint-plugin-import": "^2.17.3",
+    "nodemon": "^1.19.1",
+    "shelljs": "^0.8.3"
   }
 }
